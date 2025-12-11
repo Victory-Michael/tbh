@@ -442,7 +442,7 @@ main {
     padding: 0 20px 40px;
     overflow: hidden;
     text-align: center;
-    animation: appear 5s linear;
+    animation: appear .1s linear;
     animation-timeline: view();
     animation-range: entry 0% cover 30%;
 }
@@ -644,7 +644,7 @@ main {
     .hero { padding: 20px 15px 40px; }
     .hero h1 { font-size: 2rem; }
     .hero .lead { font-size: 1rem; }
-    .prompt-slider { padding: 0 15px 20px; animation: appear .5s linear; animation-timeline: view(); animation-range: entry 0% cover 30%;}
+    .prompt-slider { padding: 0 15px 20px; animation: appear .1s linear; animation-timeline: view(); animation-range: entry 0% cover 30%;}
     
     /* Prompt slider fixes for mobile scrolling */
     .prompt-track {
@@ -1554,3 +1554,4 @@ main {
     }
 
 }
+
