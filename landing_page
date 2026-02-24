@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GhostRoom — The Void</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --accent: #ff2d55;
+            --bg: #050505;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* VOID CRT OVERLAY */
+        body::after {
+            content: " ";
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 1000;
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* MARQUEE */
+        .marquee {
+            white-space: nowrap;
+            overflow: hidden;
+            background: var(--accent);
+            color: black;
+            padding: 10px 0;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            transform: rotate(-1deg);
+        }
+        .marquee-inner {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-50%, 0, 0); }
+        }
+
+        /* LIQUID MEGA GHOST */
+        .mega-ghost {
+            position: fixed;
+            top: 10%;
+            left: -5%;
+            opacity: 0.05;
+            filter: blur(8px) url(#wavy);
+            z-index: 0;
+            pointer-events: none;
+            animation: mega-drift 40s ease-in-out infinite;
+        }
+
+        @keyframes mega-drift {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+
+            50% {
+                transform: translate(70vw, 30vh) rotate(10deg) scale(1.4);
+            }
+        }
+
+        /* GLITCH EFFECT */
+        .glitch-text {
+            animation: glitch 3s infinite;
+            position: relative;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 0.05em 0 0 #ff2d55, -0.05em -0.025em 0 #00ffff;
+            }
+
+            14% {
+                text-shadow: 0.05em 0 0 #ff2d55, -0.05em -0.025em 0 #00ffff;
+            }
+
+            15% {
+                text-shadow: -0.05em -0.025em 0 #ff2d55, 0.025em 0.025em 0 #00ffff;
+            }
+
+            49% {
+                text-shadow: -0.05em -0.025em 0 #ff2d55, 0.025em 0.025em 0 #00ffff;
+            }
+
+            50% {
+                text-shadow: 0.025em 0.05em 0 #ff2d55, 0.05em 0 0 #00ffff;
+            }
+
+            100% {
+                text-shadow: 0.025em 0.05em 0 #ff2d55, 0.05em 0 0 #00ffff;
+            }
+        }
+
+        /* UI MOCKUP STYLING */
+        .ui-mockup {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(24px);
+            border-radius: 32px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+        }
+
+        /* CHUNKY BUTTON */
+        .btn-chunky {
+            background: white;
+            color: black;
+            font-weight: 800;
+            padding: 18px 36px;
+            border-radius: 12px;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            box-shadow: 0 0px 0px var(--accent);
+            cursor: pointer;
+        }
+
+        .btn-chunky:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 0px var(--accent);
+        }
+
+        /* MOUSE STALKER */
+        #cursor-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+            transition: transform 0.15s ease-out;
+            color: var(--accent);
+        }
+
+        /* Neon Footer Sign */
+        .neon-sign {
+            font-size: clamp(3rem, 12vw, 10rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 20px var(--accent),
+                0 0 40px var(--accent);
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+            20%, 24%, 55% { opacity: 0.5; filter: grayscale(1); }
+        }
+
+        section { position: relative; z-index: 10; }
+    </style>
+</head>
+
+<body class="selection:bg-pink-500">
+
+    <div id="cursor-ghost"><i data-lucide="ghost" size="28"></i></div>
+
+    <svg style="display: none;">
+        <defs>
+            <filter id="wavy">
+                <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="60" />
+            </filter>
+        </defs>
+    </svg>
+
+    <div class="mega-ghost">
+        <i data-lucide="ghost" size="800"></i>
+    </div>
+
+    <nav class="fixed top-0 left-0 right-0 z-[100] flex justify-between items-center px-10 py-8">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded-2xl flex items-center justify-center -rotate-6">
+                <i data-lucide="ghost" class="text-black" size="24"></i>
+            </div>
+            <span class="font-black text-2xl tracking-tighter uppercase">GhostRoom</span>
+        </div>
+        <div class="flex items-center gap-8">
+            <span
+                class="hidden md:block text-[10px] font-bold text-white/30 uppercase tracking-widest">Protocol_0.4.2</span>
+            <a href="app.jsx" class="btn-chunky text-[10px] py-3 px-6">Launch_Void</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-8 pt-48 pb-32 grid lg:grid-cols-2 gap-16 items-center relative">
+        <div class="relative z-10">
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pink-500/10 border border-pink-500/20 mb-8">
+                <span class="relative flex h-2 w-2">
+                    <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-pink-500"></span>
+                </span>
+                <span class="text-[10px] font-black text-pink-500 uppercase tracking-widest">System Online: 14.2k
+                    Ghosts</span>
+            </div>
+
+            <h1 class="text-7xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-8">
+                THEY WON'T <br>
+                <span class="text-pink-500 glitch-text">FIND YOU</span> <br>
+                IN THE VOID.
+            </h1>
+
+            <p class="text-lg text-white/40 mb-12 max-w-md leading-relaxed font-medium">
+                Whisper a secret. Watch it burn. A 24-hour anonymous chat frequency where the only trace left behind is
+                silence.
+            </p>
+
+            <div class="flex flex-wrap gap-6 items-center">
+                <a href="app.jsx" class="btn-chunky">
+                    Sync My Frequency
+                </a>
+                <div class="flex -space-x-3">
+                    <div
+                        class="w-10 h-10 rounded-full border-2 border-black bg-zinc-800 flex items-center justify-center">
+                        <i data-lucide="user" size="14"></i></div>
+                    <div
+                        class="w-10 h-10 rounded-full border-2 border-black bg-zinc-700 flex items-center justify-center">
+                        <i data-lucide="ghost" size="14"></i></div>
+                    <div
+                        class="w-10 h-10 rounded-full border-2 border-black bg-zinc-600 flex items-center justify-center">
+                        <i data-lucide="zap" size="14"></i></div>
+                    <div class="flex items-center ml-6 text-[10px] font-bold text-white/20 uppercase tracking-widest">
+                        + Join the swarm
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative hidden lg:block">
+            <div class="absolute -inset-20 bg-pink-500/10 blur-[120px] rounded-full"></div>
+            <div class="ui-mockup p-8 rotate-2 transform hover:rotate-0 transition-all duration-700">
+                <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+                    <div class="flex gap-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-500/40"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/40"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/40"></div>
+                    </div>
+                    <div class="text-[9px] font-black text-white/20 tracking-widest uppercase">Encrypted_Session.void
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-white/5 p-4 rounded-2xl rounded-bl-none w-3/4">
+                        <div class="h-1.5 w-1/3 bg-white/10 rounded mb-3"></div>
+                        <div class="h-2 w-full bg-white/5 rounded"></div>
+                    </div>
+                    <div class="bg-pink-500/10 border border-pink-500/20 p-4 rounded-2xl rounded-br-none w-3/4 ml-auto">
+                        <p class="text-[10px] font-black text-pink-500 uppercase mb-2">Anon_4209</p>
+                        <p class="text-xs text-white/70 leading-relaxed">I just dropped the frequency link in the bio.
+                            We have 24 hours.</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl rounded-bl-none w-1/2 border border-white/5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-lg bg-white/5 flex items-center justify-center">
+                                <i data-lucide="ghost" size="12" class="text-white/20"></i>
+                            </div>
+                            <span class="text-[9px] text-white/20 font-black tracking-widest uppercase">MESSAGE
+                                BURNED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 pt-6 border-t border-white/5 flex gap-3">
+                    <div class="h-10 bg-white/5 rounded-xl flex-1 border border-white/5"></div>
+                    <div class="h-10 w-10 bg-white rounded-xl flex items-center justify-center">
+                        <i data-lucide="send" size="16" class="text-black"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="marquee">
+        <div class="marquee-inner">
+            NO LOGS — NO TRACE — NO LOGS — NO TRACE — NO LOGS — NO TRACE — NO LOGS — NO TRACE — NO LOGS — NO TRACE —
+        </div>
+    </div>
+
+    <section class="max-w-7xl mx-auto px-10 py-40 grid md:grid-cols-2 gap-20 items-center relative z-10">
+        <div>
+            <h2 class="text-6xl font-black italic mb-8 uppercase tracking-tighter">What is <br><span
+                    class="text-pink-500">GhostRoom?</span></h2>
+            <p class="text-xl text-white/50 leading-relaxed">
+                GhostRoom is a lightweight, anonymous chat app built for fast, no-strings-attached conversations. We
+                believe not every chat needs a login, profile pic, or permanent record. Sometimes, you just want to say
+                something, share a thought, or laugh with a friend — and then vanish like a ghost.
+            </p>
+        </div>
+        <div class="glass-card p-12 border-l-4 border-l-pink-500">
+            <h3 class="text-2xl font-black mb-4 uppercase">Real-Time Messaging</h3>
+            <p class="text-white/40 mb-8">Messages are delivered instantly as you type. Everyone in the room sees your
+                message the moment you send it, keeping conversations smooth and engaging.</p>
+            <div class="flex gap-2">
+                <div class="h-2 w-2 rounded-full bg-pink-500 animate-ping"></div>
+                <div class="h-2 w-2 rounded-full bg-pink-500"></div>
+                <div class="h-2 w-2 rounded-full bg-pink-500"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-10 py-40 relative z-10">
+        <div class="glass-card p-20 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent">
+            </div>
+            <h2 class="text-7xl font-black mb-8 uppercase italic">Completely <span
+                    class="text-pink-500">Anonymous</span></h2>
+            <p class="text-2xl text-white/40 max-w-3xl mx-auto leading-relaxed mb-12">
+                No logins, no emails, and no profiles. Just enter a room code and start chatting. You stay private and
+                your identity stays yours. Connect instantly and leave with no trace.
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="p-8 border border-white/5 rounded-3xl bg-black/40">
+                    <h4 class="text-pink-500 font-black text-4xl mb-2">0</h4>
+                    <p class="text-[10px] uppercase font-bold text-white/30">Databases</p>
+                </div>
+                <div class="p-8 border border-white/5 rounded-3xl bg-black/40">
+                    <h4 class="text-pink-500 font-black text-4xl mb-2">0</h4>
+                    <p class="text-[10px] uppercase font-bold text-white/30">Logins</p>
+                </div>
+                <div class="p-8 border border-white/5 rounded-3xl bg-black/40">
+                    <h4 class="text-pink-500 font-black text-4xl mb-2">0</h4>
+                    <p class="text-[10px] uppercase font-bold text-white/30">Cookies</p>
+                </div>
+                <div class="p-8 border border-white/5 rounded-3xl bg-black/40">
+                    <h4 class="text-pink-500 font-black text-4xl mb-2">∞</h4>
+                    <p class="text-[10px] uppercase font-bold text-white/30">Privacy</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative z-10">
+        <div class="bg-white/5 border border-white/10 px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.3em] mb-8 animate-pulse">
+            Establishing Encrypted Frequency...
+        </div>
+        <h1 class="text-7xl md:text-[10rem] font-black tracking-tighter leading-[0.85] italic mb-10">
+            VANISH <br> <span class="text-pink-500 outline-text" style="-webkit-text-stroke: 2px #ff2d55; color: transparent;">FOREVER.</span>
+        </h1>
+        <p class="text-xl text-white/40 mb-12 max-w-2xl font-medium">
+            No Logs. No Names. No History. Just whispers that die the moment they are heard.
+        </p>
+        <div class="flex gap-6">
+            <a href="app.jsx" class="btn-chunky text-lg">START CHATTING</a>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-10 py-40 grid md:grid-cols-2 gap-16 items-center relative z-10">
+        <div class="order-2 md:order-1 glass-card p-12">
+            <h2 class="text-4xl font-black mb-6 uppercase tracking-tighter italic">Temporary <span
+                    class="text-pink-500">Rooms</span></h2>
+            <p class="text-white/40 text-lg leading-relaxed mb-8">
+                Rooms disappear as soon as everyone leaves. No messages are saved and nothing stays behind. It feels
+                like the chat never existed. Perfect for quick private conversations that leave no trace.
+            </p>
+            <div class="w-full h-px bg-white/10 relative">
+                <div class="absolute top-0 left-0 h-full bg-pink-500 w-1/3 animate-[shimmer_2s_infinite]"></div>
+            </div>
+        </div>
+        <div class="order-1 md:order-2">
+            <h3 class="text-8xl font-black text-white/5 uppercase">SHADOWS</h3>
+            <p class="text-2xl font-bold italic text-white/20">"The room dies when you leave."</p>
+        </div>
+    </section>
+
+    <footer class="py-40 px-10 text-center overflow-hidden">
+        <div class="mb-24">
+            <h2 class="neon-sign">GhostRoom</h2>
+        </div>
+        <div class="max-w-7xl mx-auto pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 opacity-50">
+                <i data-lucide="ghost" size="20"></i>
+                <span class="font-black text-sm uppercase">The Void © 2026</span>
+            </div>
+            <div class="flex gap-8 text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
+                <a href="#" class="hover:text-pink-500 transition-colors">GitHub</a>
+                <a href="#" class="hover:text-pink-500 transition-colors">Manifesto</a>
+                <a href="#" class="hover:text-pink-500 transition-colors">Terms</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        // MOUSE STALKER
+        const cursor = document.getElementById('cursor-ghost');
+        document.addEventListener('mousemove', e => {
+            cursor.style.transform = `translate(${e.clientX + 10}px, ${e.clientY + 10}px)`;
+        });
+    </script>
+</body>
+
+</html>
